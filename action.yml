@@ -1,0 +1,23 @@
+name: "Load Docker Image"
+description: "Download image artifact, load image from artifact and tag loaded image"
+inputs:
+  name:
+    description: "The name of the artifact"
+    required: true
+  path:
+    description: "The path to the directory containing the artifact"
+    required: true
+  tag:
+    description: "The tag that will be given to the loaded image"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Download image artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ inputs.name }}
+        path: ${{ inputs.path }}
+    - name: Load image
+      run: ${{ github.action_path }}/load_image.sh ${{ inputs.path }} ${{ inputs.name }} ${{ inputs.tag }}
+      shell: bash
