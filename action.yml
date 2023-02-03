@@ -1,23 +1,19 @@
 name: "Load Docker Image"
-description: "Download image artifact, load image from artifact and tag loaded image"
+description: "Load image from downloaded artifact" 
 inputs:
   name:
     description: "The name of the artifact"
     required: true
-  path:
-    description: "The path to the directory containing the artifact"
-    required: true
-  tag:
-    description: "The tag that will be given to the loaded image"
-    required: true
 runs:
   using: "composite"
   steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
     - name: Download image artifact
       uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.name }}
-        path: ${{ inputs.path }}
+        path: /tmp/${{ inputs.name }}.tar
     - name: Load image
-      run: ${{ github.action_path }}/load_image.sh ${{ inputs.path }} ${{ inputs.name }} ${{ inputs.tag }}
+      run: docker load --input /tmp/${{ inputs.name }}.tar
       shell: bash
